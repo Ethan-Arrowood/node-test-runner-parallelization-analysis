@@ -1,0 +1,12 @@
+{
+	"name": "node-test-runner-parallelization-analysis",
+	"type": "module",
+	"version": "1.0.0",
+	"engines": {
+		"node": "24"
+	},
+	"devDependencies": {
+		"@types/node": "^24.10.1",
+		"typescript": "^5.9.3"
+	}
+}
