@@ -5,18 +5,19 @@ import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { randomBytes } from 'node:crypto';
 
-import { getMode, randomInRange, type ModeName} from './modes.ts';
+import { getMode, randomInRange, type Mode } from './modes.ts';
 
 interface SimulationResultSuccess {
 	fileIoAmount: number;
 	processCount: number;
-	mode: ModeName;
+	threadCount: number;
+	mode: Mode;
 	success: true;
 }
 
 interface SimulationResultFailure {
 	error: unknown;
-	mode: ModeName;
+	mode: Mode;
 	success: false;
 }
 
@@ -28,7 +29,7 @@ type SimulationResult = SimulationResultSuccess | SimulationResultFailure;
  * - Creates worker threads for CPU-intensive work
  * - Database-like operations with serialization
  */
-export async function simulateApplication(modeName: ModeName = 'default'): Promise<SimulationResult> {
+export async function simulateApplication(modeName: string = 'default'): Promise<SimulationResult> {
 	console.log('starting simulation with mode:', modeName);
 	// Get mode configuration
 	const mode = getMode(modeName);
@@ -43,22 +44,24 @@ export async function simulateApplication(modeName: ModeName = 'default'): Promi
 		await performFileOperations(tmpDir, fileIoAmount);
 
 		// Spawn child processes based on mode range
-		const processCount = Math.floor(randomInRange(mode.processRange[0], mode.processRange[1] + 0.999));
+		const processCount = Math.floor(randomInRange(mode.processRange[0], mode.processRange[1]));
 		await spawnChildProcesses(processCount);
 
 		// CPU-intensive work via worker threads (simulating database operations)
-		await performCpuWork(mode.cpuWorkMultiplier);
+		const threadCount = Math.floor(randomInRange(mode.threadRange[0], mode.threadRange[1]));
+		await spawnThreads(threadCount, mode.cpuWorkMultiplier);
 
 		return {
 			fileIoAmount,
 			processCount,
-			mode: modeName,
+			threadCount,
+			mode,
 			success: true
 		};
 	} catch (error) {
 		return {
-			error: error,
-			mode: modeName,
+			error,
+			mode,
 			success: false
 		};
 	} finally {
@@ -121,6 +124,14 @@ async function spawnChildProcesses(count: number) {
 	}
 
 	await Promise.all(processes);
+}
+
+function spawnThreads(count: number, cpuMultiplier: number) {
+	if (count === 0) return Promise.resolve();
+
+	return Promise.all(
+		Array.from({ length: count }, () => performCpuWork(cpuMultiplier))
+	);
 }
 
 function performCpuWork(multiplier = 1.0) {

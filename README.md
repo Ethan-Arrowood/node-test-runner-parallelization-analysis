@@ -49,7 +49,7 @@ Test Concurrency:     [Single Process: Promise.all(...)]   ← Async concurrency
 
 For resource-intensive integration tests, **file-level parallelism is the primary concern** because each test file spawns its own application instance.
 
-## Benchmark Test Run with Concurrency Sequential to Max
+## Benchmark Test Run with Concurrency (Sequential to Max)
 
 This repo contains a directory of test files (`test-files`) that have been generated using the `generate-tests.ts` script and `test.template.ts` template.
 
@@ -61,4 +61,46 @@ You can run these files however you want using the Node.js test runner `node --t
 
 ```
 node benchmark-test-run.ts 20
+```
+
+## Modes
+
+Real applications and integration tests don't always do the same amount of work. They don't necessarily use the same number of processes, worker threads, or handle the same amount of I/O work. So when conducting this research it was naive to always use the exact same amount of work. Rather than adding in a large variance of randomness, we use **modes** that can either specify an exact amount of work or a range that can then be randomized.
+
+For example, the `default` mode tells the simulated application to use anywhere from 0MB to 100MB of File I/O, 0 to 3 processes, and use 0 to 4 worker threads with a regular amount of CPU work.
+
+Meanwhile the `maximum` mode specifies 100MB of File I/O, 3 processes, 4 worker threads with double the amount of CPU work.
+
+The various modes can be used to see how test parallelization works over a variety of circumstances. Generally, specifying ranges is important since in a real set of integration test files, one file might do significantly more work than the next.
+
+### Mode Information
+
+For information on available modes and their configurations use the included `mode.ts info` command.
+
+List all modes and their configuration details:
+
+```
+node mode.ts info
+```
+
+Compare select modes:
+
+```
+node mode.ts info default minimal maximum
+```
+
+### Mode Testing
+
+You can test modes using the `mode.ts test` command. This will run the simulated application with the given mode then execute 10 async requests simultaneously and display metrics.
+
+Test a single mode:
+
+```
+node mode.ts test default
+```
+
+Test multiple modes:
+
+```
+node mode.ts test default minimal maximum
 ```

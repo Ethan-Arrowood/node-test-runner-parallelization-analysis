@@ -53,8 +53,9 @@ suite('HTTP Server Integration Tests 13', { concurrency: true }, () => {
 			assert.fail(json.error);
 		}
 
-		assert.ok(json.appMetrics.fileIoAmount >= 0);
-		assert.ok(json.appMetrics.processCount >= 0);
+		assert.ok(json.metrics.fileIoAmount >= 0);
+		assert.ok(json.metrics.processCount >= 0);
+		assert.ok(json.metrics.threadCount >= 0);
 	});
 
 	test('request 2', async () => {
@@ -65,8 +66,9 @@ suite('HTTP Server Integration Tests 13', { concurrency: true }, () => {
 			assert.fail(json.error);
 		}
 
-		assert.ok(json.appMetrics.fileIoAmount >= 0);
-		assert.ok(json.appMetrics.processCount >= 0);
+		assert.ok(json.metrics.fileIoAmount >= 0);
+		assert.ok(json.metrics.processCount >= 0);
+		assert.ok(json.metrics.threadCount >= 0);
 	});
 
 	test('request 3', async () => {
@@ -77,8 +79,9 @@ suite('HTTP Server Integration Tests 13', { concurrency: true }, () => {
 			assert.fail(json.error);
 		}
 
-		assert.ok(json.appMetrics.fileIoAmount >= 0);
-		assert.ok(json.appMetrics.processCount >= 0);
+		assert.ok(json.metrics.fileIoAmount >= 0);
+		assert.ok(json.metrics.processCount >= 0);
+		assert.ok(json.metrics.threadCount >= 0);
 	});
 
 	test('request 4', async () => {
@@ -89,7 +92,8 @@ suite('HTTP Server Integration Tests 13', { concurrency: true }, () => {
 			assert.fail(json.error);
 		}
 
-		assert.ok(json.appMetrics.fileIoAmount >= 0);
-		assert.ok(json.appMetrics.processCount >= 0);
+		assert.ok(json.metrics.fileIoAmount >= 0);
+		assert.ok(json.metrics.processCount >= 0);
+		assert.ok(json.metrics.threadCount >= 0);
 	});
 })

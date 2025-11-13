@@ -3,7 +3,10 @@ import { join, basename } from 'node:path';
 import { availableParallelism} from 'node:os';
 import test, { run } from 'node:test';
 
-const NUM_TEST_FILES = parseInt(process.argv[2] || '20', 10);
+const NUM_TEST_FILES = parseInt(process.env.NUM_TEST_FILES || process.argv[2] || '20', 10);
+const APP_MODE = process.env.APP_MODE || process.argv[3] || 'default';
+// Set the APP_MODE for the test runs
+process.env.APP_MODE = APP_MODE;
 const MAX_CONCURRENCY = availableParallelism();
 
 const testFilesDir = join(import.meta.dirname, 'test-files');
@@ -15,6 +18,7 @@ for (let i = 0; i < NUM_TEST_FILES; i++) {
 console.log(`\n========================================`);
 console.log(`Benchmark Configuration:`);
 console.log(`  Number of Test Files: ${NUM_TEST_FILES}`);
+console.log(`  Application Mode: ${APP_MODE}`);
 console.log(`  Max Concurrency: ${MAX_CONCURRENCY}`);
 console.log(`========================================\n`);
 
@@ -71,6 +75,15 @@ for (let i = 1; i <= MAX_CONCURRENCY; i++) {
 	results.push(result);
 	console.log(`✓ ${result.duration}ms (${result.passed} passed, ${result.failed} failed)`);
 }
+
+const resultsDir = join(import.meta.dirname, 'benchmark-results');
+mkdirSync(resultsDir, { recursive: true });
+
+writeFileSync(join(resultsDir, `results-${Date.now()}.json`), JSON.stringify({
+	numberOfTestFiles: NUM_TEST_FILES,
+	applicationMode: APP_MODE,
+	results
+}, null, 2));
 
 // Display results
 console.log(`\n========================================`);
