@@ -1,10 +1,3 @@
-// Given a sample size (5, 25, 50, etc.), a number of test files (5, 10, 20), and application mode (default, etc.)
-// Confirm settings (skip if CONFIRMED=1) and then
-// Execute the benchmark-test-run and collect the results
-// Compute statistics like average, fastest, slowest, mean, median, standard deviation, etc.
-// Save result to a file for tracking
-// Render results in table + ASCII graph for visualization
-
 import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { createInterface } from 'node:readline/promises'
@@ -131,7 +124,7 @@ interface StatisticalAnalysis {
  */
 async function readResultFiles(benchmarkResultsDir: string): Promise<BenchmarkResult[]> {
 	const files = await readdir(benchmarkResultsDir);
-	const resultFiles = files.filter(file => file.endsWith('.json'));
+	const resultFiles = files.filter(file => file.endsWith('.json') && file !== 'statistical-analysis.json');
 
 	const results: BenchmarkResult[] = [];
 	for (const file of resultFiles) {
